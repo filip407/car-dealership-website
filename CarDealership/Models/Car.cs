@@ -17,7 +17,7 @@ public class Car : BaseEntity
     public decimal Price { get; set; }
 
     [DataType(DataType.Date)]
-    public DateTime AddedAt { get; set; } = DateTime.Now;
+    public DateTime AddedAt { get; set; } = DateTime.UtcNow;
 
     public int BrandId { get; set; }
     public Brand? Brand { get; set; }
