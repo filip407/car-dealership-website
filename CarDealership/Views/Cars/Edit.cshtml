@@ -1,0 +1,62 @@
+﻿@model CarDealership.Models.Car
+@{
+    ViewData["Title"] = "Editează Mașină";
+}
+
+<div class="row mt-4 justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h4 class="mb-0">Actualizare Date Mașină</h4>
+            </div>
+            <div class="card-body">
+                <form asp-action="Edit" method="post" enctype="multipart/form-data">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    <input type="hidden" asp-for="Id" />
+
+                    <div class="row">
+                        <div class="col-md-6 form-group mb-3">
+                            <label asp-for="BrandId" class="form-label">Marcă Auto</label>
+                            <select asp-for="BrandId" class="form-select" asp-items="ViewBag.Brands"></select>
+                            <span asp-validation-for="BrandId" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-6 form-group mb-3">
+                            <label asp-for="ModelName" class="form-label">Model</label>
+                            <input asp-for="ModelName" class="form-control" />
+                            <span asp-validation-for="ModelName" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 form-group mb-3">
+                            <label asp-for="Year" class="form-label">An Fabricație</label>
+                            <input asp-for="Year" class="form-control" />
+                            <span asp-validation-for="Year" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-6 form-group mb-3">
+                            <label asp-for="Price" class="form-label">Preț vânzare</label>
+                            <input asp-for="Price" class="form-control" type="number" step="0.01" />
+                            <span asp-validation-for="Price" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label for="imageFile" class="form-label">Înlocuiește imaginea (lasă gol pentru a păstra imaginea actuală)</label>
+                        <input type="file" id="imageFile" name="imageFile" class="form-control" accept="image/*" />
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-outline-secondary">Anulează</a>
+                        <button type="submit" class="btn btn-primary">Salvează Modificările</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,41 @@
+﻿@model CarDealership.Models.Car
+@{
+    ViewData["Title"] = "Detalii Mașină";
+}
+
+<div class="card shadow-sm mt-4">
+    <div class="row g-0">
+        <div class="col-md-6">
+            @if (!string.IsNullOrEmpty(Model.ImagePath))
+            {
+            <img src="~/@Model.ImagePath" class="img-fluid rounded-start h-100 w-100" style="object-fit: cover; min-height: 400px;" alt="@Model.ModelName" />
+            }
+            else
+            {
+            <div class="bg-light d-flex align-items-center justify-content-center h-100" style="min-height: 400px;">
+                <span class="text-muted">Fără imagine</span>
+            </div>
+            }
+        </div>
+        <div class="col-md-6">
+            <div class="card-body p-5">
+                <h2 class="card-title fw-bold">@Model.Brand?.Name @Model.ModelName</h2>
+                <h3 class="text-success mb-4 mt-3">@Model.Price.ToString("C")</h3>
+
+                <ul class="list-group list-group-flush mb-5 fs-5">
+                    <li class="list-group-item px-0"><strong>An fabricație:</strong> @Model.Year</li>
+                    <li class="list-group-item px-0"><strong>Data adăugării:</strong> @Model.AddedAt.ToString("dd.MM.yyyy")</li>
+                    <li class="list-group-item px-0"><strong>Adăugat de Agent:</strong> @Model.Agent?.FullName</li>
+                </ul>
+
+                <div class="d-flex">
+                    <a asp-action="Index" class="btn btn-lg btn-outline-secondary me-3">Înapoi la Stoc</a>
+                    @if (User.Identity?.IsAuthenticated == true && User.IsInRole("Admin"))
+                    {
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-lg btn-primary">Editează Anunțul</a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
