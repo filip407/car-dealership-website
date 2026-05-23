@@ -28,4 +28,6 @@ public class Car : BaseEntity
     public ApplicationUser? Agent { get; set; }
 
     public string? ImagePath { get; set; }
+
+    public ICollection<Feature> Features { get; set; } = new List<Feature>();
 }
