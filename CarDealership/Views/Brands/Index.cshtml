@@ -1,0 +1,44 @@
+﻿@model List<CarDealership.Models.Brand>
+    @{
+    ViewData["Title"] = "Mărci Auto";
+    }
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Mărci Auto</h2>
+        <a asp-action="Create" class="btn btn-primary">Adaugă Marcă Nouă</a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Nume Marcă</th>
+                        <th class="text-end">Acțiuni</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var brand in Model)
+                {
+                    <tr>
+                        <td>@brand.Id</td>
+                        <td class="fw-bold">@brand.Name</td>
+                        <td class="text-end">
+                            <a asp-action="Edit" asp-route-id="@brand.Id" class="btn btn-sm btn-outline-secondary me-2">Editează</a>
+                            <form asp-action="Delete" asp-route-id="@brand.Id" method="post" class="d-inline" onsubmit="return confirm('Ești sigur că vrei să ștergi această marcă?');">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Șterge</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+                    @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="3" class="text-center py-4 text-muted">Nu există mărci adăugate în sistem.</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
