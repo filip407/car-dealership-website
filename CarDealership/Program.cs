@@ -1,6 +1,7 @@
 using CarDealership.Data;
 using CarDealership.Models;
 using CarDealership.Repositories;
+using CarDealership.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -28,6 +29,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IBrandService, BrandService>();
+builder.Services.AddScoped<ICarService, CarService>();
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
