@@ -19,6 +19,8 @@ public class Car : BaseEntity
     [DataType(DataType.Date)]
     public DateTime AddedAt { get; set; } = DateTime.UtcNow;
 
+    public bool IsSold { get; set; } = false;
+
     public int BrandId { get; set; }
     public Brand? Brand { get; set; }
 

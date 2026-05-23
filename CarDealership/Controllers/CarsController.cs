@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using CarDealership.Models;
 using CarDealership.Services;
+using CarDealership.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -122,6 +123,39 @@ public class CarsController : Controller
     public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
     {
         await _carService.DeleteCarAsync(id, _webHostEnvironment.WebRootPath, cancellationToken);
+        return RedirectToAction(nameof(Index));
+    }
+    [HttpGet]
+    public async Task<IActionResult> Sell(int id, CancellationToken cancellationToken)
+    {
+        var car = await _carService.GetCarByIdAsync(id, cancellationToken);
+        if (car == null || car.IsSold)
+        {
+            return NotFound();
+        }
+        return View(car);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Sell(int id, decimal salePrice, [FromServices] AppDbContext context, CancellationToken cancellationToken)
+    {
+        var car = await _carService.GetCarByIdAsync(id, cancellationToken);
+        if (car == null) return NotFound();
+
+        var sale = new Sale
+        {
+            CarId = car.Id,
+            AgentId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty,
+            SalePrice = salePrice,
+            SaleDate = DateTime.UtcNow
+        };
+        context.Sales.Add(sale);
+
+        car.IsSold = true;
+        await _carService.UpdateCarAsync(car, null, _webHostEnvironment.WebRootPath, cancellationToken);
+        await context.SaveChangesAsync(cancellationToken);
+
         return RedirectToAction(nameof(Index));
     }
 }

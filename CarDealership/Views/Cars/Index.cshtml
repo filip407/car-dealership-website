@@ -12,7 +12,7 @@
     </div>
 
     <div class="row">
-        @foreach (var car in Model)
+        @foreach (var car in Model.Where(c => !c.IsSold))
     {
         <div class="col-md-4 mb-4">
             <div class="card h-100 shadow-sm">
@@ -36,6 +36,7 @@
                     @if (User.Identity?.IsAuthenticated == true && User.IsInRole("Admin"))
                     {
                     <div>
+                        <a asp-action="Sell" asp-route-id="@car.Id" class="btn btn-sm btn-success text-white">Vinde</a>
                         <a asp-action="Edit" asp-route-id="@car.Id" class="btn btn-sm btn-outline-secondary">Editează</a>
                         <form asp-action="Delete" asp-route-id="@car.Id" method="post" class="d-inline" onsubmit="return confirm('Sigur vrei să ștergi această mașină din stoc?');">
                             <button type="submit" class="btn btn-sm btn-outline-danger">Șterge</button>

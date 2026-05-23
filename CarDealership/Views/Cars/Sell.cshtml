@@ -1,0 +1,32 @@
+﻿@model CarDealership.Models.Car
+@{
+    ViewData["Title"] = "Vinde Mașina";
+}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-5">
+        <div class="card shadow-sm border-success">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">Confirmare Vânzare</h4>
+            </div>
+            <div class="card-body">
+                <h5>@Model.Brand?.Name @Model.ModelName</h5>
+                <p class="text-muted">An: @Model.Year | Preț listat: @Model.Price.ToString("C")</p>
+                <hr />
+                <form asp-action="Sell" method="post">
+                    <input type="hidden" name="id" value="@Model.Id" />
+
+                    <div class="form-group mb-4">
+                        <label for="salePrice" class="form-label fw-bold">Preț final de vânzare (negociat)</label>
+                        <input type="number" step="0.01" id="salePrice" name="salePrice" class="form-control form-control-lg" value="@Model.Price" required />
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-outline-secondary">Anulează</a>
+                        <button type="submit" class="btn btn-success">Finalizează Tranzacția</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
