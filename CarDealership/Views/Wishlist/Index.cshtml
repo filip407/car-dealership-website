@@ -1,4 +1,4 @@
-@model List<CarDealership.Models.WishlistItem>
+@model List<CarDealership.ViewModels.WishlistItemViewModel>
 @{
     ViewData["Title"] = "Lista Mea de Dorințe";
 }
@@ -22,9 +22,9 @@ else
         {
             <div class="col-md-4 mb-4">
                 <div class="card h-100 shadow-sm">
-                    @if (!string.IsNullOrEmpty(item.Car?.ImagePath))
+                    @if (!string.IsNullOrEmpty(item.ImagePath))
                     {
-                        <img src="@item.Car.ImagePath" class="card-img-top" alt="@item.Car.ModelName" style="height: 200px; object-fit: cover;" />
+                        <img src="@item.ImagePath" class="card-img-top" alt="@item.ModelName" style="height: 200px; object-fit: cover;" />
                     }
                     else
                     {
@@ -33,9 +33,9 @@ else
                         </div>
                     }
                     <div class="card-body">
-                        <h5 class="card-title">@item.Car?.Brand?.Name @item.Car?.ModelName</h5>
-                        <p class="card-text text-success fw-bold fs-5">@item.Car?.Price.ToString("C")</p>
-                        <p class="card-text"><small class="text-muted">An: @item.Car?.Year</small></p>
+                        <h5 class="card-title">@item.BrandName @item.ModelName</h5>
+                        <p class="card-text text-success fw-bold fs-5">@item.Price.ToString("C")</p>
+                        <p class="card-text"><small class="text-muted">An: @item.Year</small></p>
                     </div>
                     <div class="card-footer bg-white border-top-0 d-flex justify-content-between pb-3">
                         <a asp-controller="Cars" asp-action="Details" asp-route-id="@item.CarId" class="btn btn-sm btn-outline-primary">Detalii</a>

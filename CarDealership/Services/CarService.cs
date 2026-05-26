@@ -1,59 +1,36 @@
-using CarDealership.Data;
 using CarDealership.Models;
-using Microsoft.EntityFrameworkCore;
+using CarDealership.Repositories;
 
 namespace CarDealership.Services;
 
 public class CarService : ICarService
 {
-    private readonly AppDbContext _context;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<CarService> _logger;
 
-    public CarService(AppDbContext context, ILogger<CarService> logger)
+    public CarService(IUnitOfWork unitOfWork, ILogger<CarService> logger)
     {
-        _context = context;
+        _unitOfWork = unitOfWork;
         _logger = logger;
     }
 
-    public async Task<List<Car>> GetAllCarsAsync(CancellationToken cancellationToken)
+    public async Task<List<Car>> GetAllCarsAsync(CancellationToken cancellationToken = default)
     {
-        return await _context.Cars
-            .Include(c => c.Brand)
-            .Include(c => c.Features)
-            .Where(c => !c.IsSold)
-            .ToListAsync(cancellationToken);
+        var cars = await _unitOfWork.Cars.GetAllWithDetailsAsync(cancellationToken);
+        return cars.Where(c => !c.IsSold).ToList();
     }
 
-    public async Task<Car?> GetCarByIdAsync(int id, CancellationToken cancellationToken)
+    public async Task<Car?> GetCarByIdAsync(int id, CancellationToken cancellationToken = default)
     {
-        return await _context.Cars
-            .Include(c => c.Brand)
-            .Include(c => c.Features)
-            .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
+        return await _unitOfWork.Cars.GetByIdWithDetailsAsync(id, cancellationToken);
     }
 
-    public async Task CreateCarAsync(Car car, IFormFile? imageFile, string webRootPath, CancellationToken cancellationToken)
+    public async Task<List<Car>> GetCarsByBrandAsync(int brandId, CancellationToken cancellationToken = default)
     {
-        if (imageFile != null && imageFile.Length > 0)
-        {
-            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
-            var filePath = Path.Combine(webRootPath, "uploads", fileName);
-
-            Directory.CreateDirectory(Path.Combine(webRootPath, "uploads"));
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await imageFile.CopyToAsync(stream, cancellationToken);
-            }
-            car.ImagePath = "/uploads/" + fileName;
-        }
-
-        _context.Cars.Add(car);
-        await _context.SaveChangesAsync(cancellationToken);
-
-        _logger.LogInformation("O masina noua a fost adaugata in baza de date: {Model}", car.ModelName);
+        return await _unitOfWork.Cars.GetByBrandAsync(brandId, cancellationToken);
     }
 
-    public async Task UpdateCarAsync(Car car, IFormFile? imageFile, string webRootPath, CancellationToken cancellationToken)
+    public async Task CreateCarAsync(Car car, IFormFile? imageFile, string webRootPath, CancellationToken cancellationToken = default)
     {
         if (imageFile != null && imageFile.Length > 0)
         {
@@ -69,29 +46,42 @@ public class CarService : ICarService
             car.ImagePath = "/uploads/" + fileName;
         }
 
-        _context.Cars.Update(car);
-        await _context.SaveChangesAsync(cancellationToken);
+        await _unitOfWork.Cars.AddAsync(car, cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        _logger.LogInformation("O masina noua a fost adaugata: {Model}", car.ModelName);
+    }
+
+    public async Task UpdateCarAsync(Car car, IFormFile? imageFile, string webRootPath, CancellationToken cancellationToken = default)
+    {
+        if (imageFile != null && imageFile.Length > 0)
+        {
+            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
+            var uploadsPath = Path.Combine(webRootPath, "uploads");
+            Directory.CreateDirectory(uploadsPath);
+            var filePath = Path.Combine(uploadsPath, fileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await imageFile.CopyToAsync(stream, cancellationToken);
+            }
+            car.ImagePath = "/uploads/" + fileName;
+        }
+
+        _unitOfWork.Cars.Update(car);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         _logger.LogInformation("Masina cu ID-ul {Id} a fost actualizata.", car.Id);
     }
 
-    public async Task DeleteCarAsync(int id, string webRootPath, CancellationToken cancellationToken)
+    public async Task DeleteCarAsync(int id, string webRootPath, CancellationToken cancellationToken = default)
     {
-        var car = await _context.Cars.FindAsync(new object[] { id }, cancellationToken);
+        var car = await _unitOfWork.Cars.GetByIdAsync(id, cancellationToken);
         if (car != null)
         {
-            _context.Cars.Remove(car);
-            await _context.SaveChangesAsync(cancellationToken);
-
+            _unitOfWork.Cars.Delete(car);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
             _logger.LogInformation("Masina cu ID-ul {Id} a fost stearsa.", id);
         }
-    }
-    public async Task<List<Car>> GetCarsByBrandAsync(int brandId, CancellationToken cancellationToken)
-    {
-        return await _context.Cars
-            .Include(c => c.Brand)
-            .Include(c => c.Features)
-            .Where(c => c.BrandId == brandId && !c.IsSold)
-            .ToListAsync(cancellationToken);
     }
 }

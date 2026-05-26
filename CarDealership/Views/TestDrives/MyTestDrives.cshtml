@@ -1,4 +1,4 @@
-@model List<CarDealership.Models.TestDrive>
+@model List<CarDealership.ViewModels.MyTestDriveViewModel>
 @{
     ViewData["Title"] = "Test Drive-urile Mele";
 }
@@ -24,7 +24,7 @@ else
         {
             <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                 <div>
-                    <h6 class="mb-1">@td.Car?.Brand?.Name @td.Car?.ModelName</h6>
+                    <h6 class="mb-1">@td.BrandName @td.ModelName</h6>
                     <small class="text-muted">Programat pentru: <strong>@td.ScheduledAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</strong></small>
                     @if (!string.IsNullOrEmpty(td.Notes))
                     {

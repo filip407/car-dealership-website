@@ -1,6 +1,6 @@
+@model CarDealership.ViewModels.BookTestDriveViewModel
 @{
     ViewData["Title"] = "Programează Test Drive";
-    var car = ViewBag.Car as CarDealership.Models.Car;
 }
 
 <div class="row justify-content-center mt-4">
@@ -8,15 +8,15 @@
         <h2 class="mb-4">Programează Test Drive</h2>
         <div class="card shadow-sm mb-4">
             <div class="card-body">
-                <h5 class="card-title">@car?.Brand?.Name @car?.ModelName</h5>
-                <p class="text-muted">An: @car?.Year | Preț: @car?.Price.ToString("C")</p>
+                <h5 class="card-title">@Model.BrandName @Model.ModelName</h5>
+                <p class="text-muted">An: @Model.Year | Preț: @Model.Price.ToString("C")</p>
             </div>
         </div>
 
         <div class="card shadow-sm">
             <div class="card-body p-4">
                 <form asp-action="Book" method="post">
-                    <input type="hidden" name="carId" value="@car?.Id" />
+                    <input type="hidden" name="carId" value="@Model.CarId" />
                     <div class="form-group mb-3">
                         <label class="form-label">Data și ora dorită</label>
                         <input type="datetime-local" name="scheduledAt" class="form-control" required
@@ -28,7 +28,7 @@
                     </div>
                     <div class="d-flex gap-2">
                         <button type="submit" class="btn btn-primary">Trimite Cererea</button>
-                        <a asp-controller="Cars" asp-action="Details" asp-route-id="@car?.Id" class="btn btn-outline-secondary">Înapoi</a>
+                        <a asp-controller="Cars" asp-action="Details" asp-route-id="@Model.CarId" class="btn btn-outline-secondary">Înapoi</a>
                     </div>
                 </form>
             </div>

@@ -7,6 +7,7 @@ public class UnitOfWork : IUnitOfWork
     private readonly AppDbContext _context;
     private ICarRepository? _cars;
     private IBrandRepository? _brands;
+    private IFeatureRepository? _features;
 
     public UnitOfWork(AppDbContext context)
     {
@@ -15,6 +16,7 @@ public class UnitOfWork : IUnitOfWork
 
     public ICarRepository Cars => _cars ??= new CarRepository(_context);
     public IBrandRepository Brands => _brands ??= new BrandRepository(_context);
+    public IFeatureRepository Features => _features ??= new FeatureRepository(_context);
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {

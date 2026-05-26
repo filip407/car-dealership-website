@@ -1,4 +1,4 @@
-@model List<CarDealership.Models.TestDrive>
+@model List<CarDealership.ViewModels.CalendarTestDriveViewModel>
 @{
     ViewData["Title"] = "Calendar Test Drive-uri";
 }
@@ -58,10 +58,10 @@ else
                     {
                         <tr>
                             <td>
-                                <strong>@td.User?.FullName</strong>
-                                <small class="text-muted d-block">@td.User?.Email</small>
+                                <strong>@td.UserFullName</strong>
+                                <small class="text-muted d-block">@td.UserEmail</small>
                             </td>
-                            <td>@td.Car?.Brand?.Name @td.Car?.ModelName</td>
+                            <td>@td.BrandName @td.ModelName</td>
                             <td>@td.ScheduledAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
                             <td><small>@td.Notes</small></td>
                             <td class="text-center">

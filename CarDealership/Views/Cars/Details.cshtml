@@ -1,4 +1,4 @@
-@model CarDealership.Models.Car
+@model CarDealership.ViewModels.CarViewModel
 @{
     ViewData["Title"] = "Detalii Mașină";
     bool isInWishlist = ViewBag.IsInWishlist == true;
@@ -20,21 +20,21 @@
         </div>
         <div class="col-md-6">
             <div class="card-body p-5">
-                <p class="text-muted mb-1" style="letter-spacing: 0.1em; text-transform: uppercase; font-size: 0.8rem;">@Model.Brand?.Name</p>
+                <p class="text-muted mb-1" style="letter-spacing: 0.1em; text-transform: uppercase; font-size: 0.8rem;">@Model.BrandName</p>
                 <h2 class="card-title fw-bold mb-1">@Model.ModelName</h2>
                 <h3 class="mb-4 mt-2" style="color: #1a1a1a;">@Model.Price.ToString("C")</h3>
 
                 <ul class="list-group list-group-flush mb-4">
                     <li class="list-group-item px-0"><strong>An fabricație:</strong> @Model.Year</li>
                     <li class="list-group-item px-0"><strong>Data adăugării:</strong> @Model.AddedAt.ToString("dd.MM.yyyy")</li>
-                    @if (Model.Features.Any())
+                    @if (Model.FeatureNames.Any())
                     {
                         <li class="list-group-item px-0">
                             <strong>Dotări:</strong>
                             <div class="mt-1">
-                                @foreach (var f in Model.Features)
+                                @foreach (var name in Model.FeatureNames)
                                 {
-                                    <span class="badge bg-secondary me-1 mb-1">@f.Name</span>
+                                    <span class="badge bg-secondary me-1 mb-1">@name</span>
                                 }
                             </div>
                         </li>

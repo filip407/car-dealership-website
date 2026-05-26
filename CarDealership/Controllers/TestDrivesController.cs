@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using CarDealership.Data;
 using CarDealership.Models;
+using CarDealership.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -28,7 +29,17 @@ public class TestDrivesController : Controller
             .OrderByDescending(t => t.ScheduledAt)
             .ToListAsync(cancellationToken);
 
-        return View(testDrives);
+        var viewModels = testDrives.Select(t => new MyTestDriveViewModel
+        {
+            Id = t.Id,
+            BrandName = t.Car?.Brand?.Name ?? string.Empty,
+            ModelName = t.Car?.ModelName ?? string.Empty,
+            ScheduledAt = t.ScheduledAt,
+            Notes = t.Notes,
+            IsConfirmed = t.IsConfirmed
+        }).ToList();
+
+        return View(viewModels);
     }
 
     [HttpGet]
@@ -41,8 +52,16 @@ public class TestDrivesController : Controller
 
         if (car == null) return NotFound();
 
-        ViewBag.Car = car;
-        return View();
+        var viewModel = new BookTestDriveViewModel
+        {
+            CarId = car.Id,
+            BrandName = car.Brand?.Name ?? string.Empty,
+            ModelName = car.ModelName,
+            Year = car.Year,
+            Price = car.Price
+        };
+
+        return View(viewModel);
     }
 
     [HttpPost]
@@ -80,7 +99,19 @@ public class TestDrivesController : Controller
             .OrderBy(t => t.ScheduledAt)
             .ToListAsync(cancellationToken);
 
-        return View(testDrives);
+        var viewModels = testDrives.Select(t => new CalendarTestDriveViewModel
+        {
+            Id = t.Id,
+            BrandName = t.Car?.Brand?.Name ?? string.Empty,
+            ModelName = t.Car?.ModelName ?? string.Empty,
+            UserFullName = t.User?.FullName ?? string.Empty,
+            UserEmail = t.User?.Email ?? string.Empty,
+            ScheduledAt = t.ScheduledAt,
+            Notes = t.Notes,
+            IsConfirmed = t.IsConfirmed
+        }).ToList();
+
+        return View(viewModels);
     }
 
     [HttpPost]

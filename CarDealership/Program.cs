@@ -31,6 +31,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IBrandService, BrandService>();
 builder.Services.AddScoped<ICarService, CarService>();
+builder.Services.AddScoped<IFeatureService, FeatureService>();
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();

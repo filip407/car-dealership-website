@@ -1,19 +1,6 @@
-@model List<CarDealership.Models.Sale>
+@model CarDealership.ViewModels.StatisticsViewModel
 @{
     ViewData["Title"] = "Statistici Vânzări";
-
-    var totalRevenue = Model.Sum(s => s.SalePrice);
-    var totalCarsSold = Model.Count;
-
-    var agentStats = Model
-        .GroupBy(s => s.Agent?.FullName ?? "Agent Necunoscut")
-        .Select(g => new {
-            AgentName = g.Key,
-            CarsSold = g.Count(),
-            Revenue = g.Sum(s => s.SalePrice)
-        })
-        .OrderByDescending(x => x.Revenue)
-        .ToList();
 }
 
 <h2 class="mb-4">Statistici și Performanță</h2>
@@ -23,7 +10,7 @@
         <div class="card h-100" style="background-color: #7a1a25; color: white;">
             <div class="card-body text-center py-4">
                 <p class="text-uppercase mb-2" style="letter-spacing: 0.1em; font-size: 0.8rem; color: rgba(255,255,255,0.6);">Total Încasări Firmă</p>
-                <h2 class="fw-bold mb-0">@totalRevenue.ToString("C")</h2>
+                <h2 class="fw-bold mb-0">@Model.TotalRevenue.ToString("C")</h2>
             </div>
         </div>
     </div>
@@ -31,7 +18,7 @@
         <div class="card h-100" style="background-color: #1a3a5c; color: white;">
             <div class="card-body text-center py-4">
                 <p class="text-uppercase mb-2" style="letter-spacing: 0.1em; font-size: 0.8rem; color: rgba(255,255,255,0.6);">Total Mașini Vândute</p>
-                <h2 class="fw-bold mb-0">@totalCarsSold <span style="font-size: 1.2rem; font-weight: 400;">unități</span></h2>
+                <h2 class="fw-bold mb-0">@Model.TotalCarsSold <span style="font-size: 1.2rem; font-weight: 400;">unități</span></h2>
             </div>
         </div>
     </div>
@@ -51,7 +38,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var stat in agentStats)
+                @foreach (var stat in Model.AgentStats)
                 {
                     <tr>
                         <td class="fw-bold">@stat.AgentName</td>
@@ -59,7 +46,7 @@
                         <td class="text-end fw-bold">@stat.Revenue.ToString("C")</td>
                     </tr>
                 }
-                @if (!agentStats.Any())
+                @if (!Model.AgentStats.Any())
                 {
                     <tr>
                         <td colspan="3" class="text-center py-4 text-muted">Nu există vânzări înregistrate încă.</td>
@@ -72,12 +59,12 @@
 
 <h5 class="mb-3">Istoric Tranzacții Recente</h5>
 <div class="list-group shadow-sm">
-    @foreach (var sale in Model.Take(10))
+    @foreach (var sale in Model.RecentSales)
     {
         <div class="list-group-item d-flex justify-content-between align-items-center">
             <div>
-                <h6 class="mb-1">@sale.Car?.Brand?.Name @sale.Car?.ModelName</h6>
-                <small class="text-muted">Vândut de: @sale.Agent?.FullName pe @sale.SaleDate.ToString("dd.MM.yyyy")</small>
+                <h6 class="mb-1">@sale.CarName</h6>
+                <small class="text-muted">Vândut de: @sale.AgentName pe @sale.SaleDate.ToString("dd.MM.yyyy")</small>
             </div>
             <span class="badge" style="background-color: #1a1a1a; font-size: 0.9rem; padding: 0.5rem 0.75rem;">@sale.SalePrice.ToString("C")</span>
         </div>

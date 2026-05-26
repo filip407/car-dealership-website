@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using CarDealership.Data;
 using CarDealership.Models;
+using CarDealership.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -27,7 +28,19 @@ public class WishlistController : Controller
             .OrderByDescending(w => w.AddedAt)
             .ToListAsync(cancellationToken);
 
-        return View(items);
+        var viewModels = items.Select(w => new WishlistItemViewModel
+        {
+            Id = w.Id,
+            CarId = w.CarId,
+            BrandName = w.Car?.Brand?.Name ?? string.Empty,
+            ModelName = w.Car?.ModelName ?? string.Empty,
+            Price = w.Car?.Price ?? 0,
+            Year = w.Car?.Year ?? 0,
+            ImagePath = w.Car?.ImagePath,
+            AddedAt = w.AddedAt
+        }).ToList();
+
+        return View(viewModels);
     }
 
     [HttpPost]

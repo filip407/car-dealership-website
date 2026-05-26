@@ -1,8 +1,7 @@
-using CarDealership.Data;
 using CarDealership.DTOs;
-using CarDealership.Models;
+using CarDealership.Mappings;
+using CarDealership.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace CarDealership.Controllers.Api;
 
@@ -10,76 +9,81 @@ namespace CarDealership.Controllers.Api;
 [ApiController]
 public class FeaturesApiController : ControllerBase
 {
-	private readonly AppDbContext _context;
+    private readonly IFeatureService _featureService;
 
-	public FeaturesApiController(AppDbContext context)
-	{
-		_context = context;
-	}
+    public FeaturesApiController(IFeatureService featureService)
+    {
+        _featureService = featureService;
+    }
 
-	[HttpGet]
-	public async Task<IActionResult> GetAll()
-	{
-		var features = await _context.Features
-			.Select(f => new FeatureDto { Id = f.Id, Name = f.Name })
-			.ToListAsync();
+    // GET: /api/features
+    [HttpGet]
+    [ProducesResponseType(typeof(List<FeatureDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<List<FeatureDto>>> GetAll(CancellationToken cancellationToken)
+    {
+        var features = await _featureService.GetAllFeaturesAsync(cancellationToken);
+        return Ok(features.ToDtoList());
+    }
 
-		return Ok(features);
-	}
+    // GET: /api/features/5
+    [HttpGet("{id:int}")]
+    [ProducesResponseType(typeof(FeatureDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<FeatureDto>> GetById(int id, CancellationToken cancellationToken)
+    {
+        var feature = await _featureService.GetFeatureByIdAsync(id, cancellationToken);
+        if (feature == null)
+            return NotFound();
 
-	[HttpGet("{id}")]
-	public async Task<IActionResult> GetById(int id)
-	{
-		var feature = await _context.Features.FindAsync(id);
+        return Ok(feature.ToDto());
+    }
 
-		if (feature == null)
-			return NotFound();
+    // POST: /api/features
+    [HttpPost]
+    [ProducesResponseType(typeof(FeatureDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<FeatureDto>> Create([FromBody] CreateFeatureDto dto, CancellationToken cancellationToken)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
 
-		var dto = new FeatureDto { Id = feature.Id, Name = feature.Name };
-		return Ok(dto);
-	}
+        var feature = dto.ToEntity();
+        await _featureService.CreateFeatureAsync(feature, cancellationToken);
 
-	[HttpPost]
-	public async Task<IActionResult> Create([FromBody] FeatureDto dto)
-	{
-		if (!ModelState.IsValid)
-			return BadRequest(ModelState);
+        return CreatedAtAction(nameof(GetById), new { id = feature.Id }, feature.ToDto());
+    }
 
-		var feature = new Feature { Name = dto.Name };
-		_context.Features.Add(feature);
-		await _context.SaveChangesAsync();
+    // PUT: /api/features/5
+    [HttpPut("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Update(int id, [FromBody] UpdateFeatureDto dto, CancellationToken cancellationToken)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
 
-		dto.Id = feature.Id;
+        var feature = await _featureService.GetFeatureByIdAsync(id, cancellationToken);
+        if (feature == null)
+            return NotFound();
 
-		return CreatedAtAction(nameof(GetById), new { id = feature.Id }, dto);
-	}
+        dto.ApplyTo(feature);
+        await _featureService.UpdateFeatureAsync(feature, cancellationToken);
 
-	[HttpPut("{id}")]
-	public async Task<IActionResult> Update(int id, [FromBody] FeatureDto dto)
-	{
-		if (id != dto.Id || !ModelState.IsValid)
-			return BadRequest();
+        return NoContent();
+    }
 
-		var feature = await _context.Features.FindAsync(id);
-		if (feature == null)
-			return NotFound();
+    // DELETE: /api/features/5
+    [HttpDelete("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
+    {
+        var feature = await _featureService.GetFeatureByIdAsync(id, cancellationToken);
+        if (feature == null)
+            return NotFound();
 
-		feature.Name = dto.Name;
-		await _context.SaveChangesAsync();
-
-		return NoContent();
-	}
-
-	[HttpDelete("{id}")]
-	public async Task<IActionResult> Delete(int id)
-	{
-		var feature = await _context.Features.FindAsync(id);
-		if (feature == null)
-			return NotFound();
-
-		_context.Features.Remove(feature);
-		await _context.SaveChangesAsync();
-
-		return NoContent();
-	}
+        await _featureService.DeleteFeatureAsync(id, cancellationToken);
+        return NoContent();
+    }
 }

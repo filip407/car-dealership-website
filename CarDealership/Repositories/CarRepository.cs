@@ -13,6 +13,7 @@ public class CarRepository : Repository<Car>, ICarRepository
         return await _context.Cars
             .Include(c => c.Brand)
             .Include(c => c.Agent)
+            .Include(c => c.Features)
             .OrderByDescending(c => c.AddedAt)
             .ToListAsync(cancellationToken);
     }
@@ -22,6 +23,7 @@ public class CarRepository : Repository<Car>, ICarRepository
         return await _context.Cars
             .Include(c => c.Brand)
             .Include(c => c.Agent)
+            .Include(c => c.Features)
             .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
     }
 
@@ -31,6 +33,7 @@ public class CarRepository : Repository<Car>, ICarRepository
             .Where(c => c.BrandId == brandId)
             .Include(c => c.Brand)
             .Include(c => c.Agent)
+            .Include(c => c.Features)
             .OrderByDescending(c => c.AddedAt)
             .ToListAsync(cancellationToken);
     }
@@ -45,6 +48,7 @@ public class CarRepository : Repository<Car>, ICarRepository
         return await _context.Cars
             .Include(c => c.Brand)
             .Include(c => c.Agent)
+            .Include(c => c.Features)
             .OrderByDescending(c => c.AddedAt)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
