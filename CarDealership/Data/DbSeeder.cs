@@ -15,6 +15,11 @@ public static class DbSeeder
             await roleManager.CreateAsync(new IdentityRole("Admin"));
         }
 
+        if (!await roleManager.RoleExistsAsync("Customer"))
+        {
+            await roleManager.CreateAsync(new IdentityRole("Customer"));
+        }
+
         var adminEmail = "admin@cardealership.com";
         var adminUser = await userManager.FindByEmailAsync(adminEmail);
 

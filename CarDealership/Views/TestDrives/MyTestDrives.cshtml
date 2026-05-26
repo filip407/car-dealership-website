@@ -1,0 +1,40 @@
+@model List<CarDealership.Models.TestDrive>
+@{
+    ViewData["Title"] = "Test Drive-urile Mele";
+}
+
+<h2 class="mb-4">Test Drive-urile Mele</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+@if (!Model.Any())
+{
+    <div class="text-center py-5 text-muted">
+        <h4>Nu ai programat niciun test drive.</h4>
+        <a asp-controller="Cars" asp-action="Index" class="btn btn-primary mt-3">Caută Mașini</a>
+    </div>
+}
+else
+{
+    <div class="list-group shadow-sm">
+        @foreach (var td in Model)
+        {
+            <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="mb-1">@td.Car?.Brand?.Name @td.Car?.ModelName</h6>
+                    <small class="text-muted">Programat pentru: <strong>@td.ScheduledAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</strong></small>
+                    @if (!string.IsNullOrEmpty(td.Notes))
+                    {
+                        <p class="mb-0 mt-1 text-muted small">@td.Notes</p>
+                    }
+                </div>
+                <span class="badge @(td.IsConfirmed ? "bg-success" : "bg-warning text-dark")">
+                    @(td.IsConfirmed ? "Confirmat" : "În așteptare")
+                </span>
+            </div>
+        }
+    </div>
+}

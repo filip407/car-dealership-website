@@ -1,31 +1,185 @@
-html {
-  font-size: 14px;
-}
-
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
+:root {
+    --audi-black: #000000;
+    --audi-dark: #1a1a1a;
+    --audi-gray: #4a4a4a;
+    --audi-light-gray: #f5f5f5;
+    --audi-red: #bb0a21;
+    --audi-border: #e0e0e0;
 }
 
 body {
-  margin-bottom: 60px;
+    font-family: 'Inter', sans-serif;
+    background-color: #f7f7f7;
+    color: #1a1a1a;
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
+.audi-navbar {
+    background-color: var(--audi-dark) !important;
+    padding: 0.85rem 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
+.audi-brand-text {
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: white;
+    text-transform: uppercase;
+}
+
+.audi-navbar .nav-link {
+    color: rgba(255,255,255,0.85) !important;
+    font-size: 0.9rem;
+    letter-spacing: 0.03em;
+    padding: 0.5rem 1rem !important;
+    transition: color 0.2s;
+}
+
+.audi-navbar .nav-link:hover {
+    color: #ffffff !important;
+}
+
+.audi-footer {
+    background-color: #f0f0f0;
+    border-top: 1px solid var(--audi-border);
+}
+
+.card {
+    border: 1px solid var(--audi-border);
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    overflow: hidden;
+    background: #fff;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
+
+.card-img-top {
+    height: 220px;
+    object-fit: cover;
+}
+
+.btn-primary {
+    background-color: var(--audi-dark);
+    border: none;
+    border-radius: 2px;
+    padding: 0.55rem 1.4rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background-color: var(--audi-black);
+}
+
+.btn-outline-primary {
+    border-color: var(--audi-dark);
+    color: var(--audi-dark);
+    border-radius: 2px;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--audi-dark);
+    border-color: var(--audi-dark);
+}
+
+.btn-sm {
+    padding: 0.25rem 0.6rem !important;
+    font-size: 0.78rem !important;
+    letter-spacing: 0.02em !important;
+}
+
+.btn-danger,
+.btn-outline-danger {
+    border-radius: 2px;
+}
+
+.btn-success {
+    background-color: #2d6a4f;
+    border: none;
+    border-radius: 2px;
+}
+
+.table {
+    background: white;
+}
+
+.table thead {
+    background: var(--audi-light-gray);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--audi-gray);
+}
+
+.settings-card {
+    border: none;
+    border-radius: 4px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    overflow: hidden;
+}
+
+.settings-card .card-header {
+    background-color: var(--audi-dark);
+    color: white;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    padding: 1rem 1.25rem;
+    border: none;
+}
+
+.settings-card .badge {
+    background-color: rgba(255,255,255,0.2) !important;
+    color: white !important;
+}
+
+.audi-hero {
+    background: linear-gradient(135deg, var(--audi-dark) 0%, #2d2d2d 100%);
+    color: white;
+    padding: 80px 0;
+    border-radius: 4px;
+    margin-bottom: 3rem;
+}
+
+.audi-hero h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.audi-hero .subtitle {
+    font-size: 1.1rem;
+    color: rgba(255,255,255,0.7);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.list-group-item {
+    border-color: var(--audi-border);
+    padding: 0.85rem 1rem;
+}
+
+.badge {
+    border-radius: 2px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+}
+
+.alert {
+    border-radius: 2px;
+    border: none;
 }

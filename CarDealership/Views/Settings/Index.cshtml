@@ -1,0 +1,157 @@
+@{
+    ViewData["Title"] = "Setări Sistem";
+}
+
+<h2 class="mb-4">Panou de Administrare</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger mb-4">@TempData["Error"]</div>
+}
+
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card settings-card h-100">
+            <div class="card-header">
+                <h5 class="mb-0">Personal (Agenți)</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="CreateAgent" method="post" class="mb-4">
+                    <input type="text" name="fullName" class="form-control mb-2" placeholder="Nume Complet" required />
+                    <input type="email" name="email" class="form-control mb-2" placeholder="Email" required />
+                    <input type="password" name="password" class="form-control mb-3" placeholder="Parolă Temporară" required />
+                    <button type="submit" class="btn btn-primary w-100">Creează Cont Agent</button>
+                </form>
+                <ul class="list-group list-group-flush">
+                    @if (ViewBag.Agents != null)
+                    {
+                        foreach (var agent in ViewBag.Agents)
+                        {
+                            <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>@agent.FullName</strong>
+                                    <small class="text-muted d-block">@agent.Email</small>
+                                </div>
+                                <form asp-action="DeleteAgent" method="post" onsubmit="return confirm('Ești sigur?');">
+                                    <input type="hidden" name="id" value="@agent.Id" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Șterge</button>
+                                </form>
+                            </li>
+                        }
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="card settings-card h-100">
+            <div class="card-header">
+                <h5 class="mb-0">Mărci Auto</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="CreateBrand" method="post" class="d-flex mb-4">
+                    <input type="text" name="name" class="form-control me-2" placeholder="Nume Marcă" required />
+                    <button type="submit" class="btn btn-primary">Adaugă</button>
+                </form>
+                <ul class="list-group list-group-flush">
+                    @if (ViewBag.Brands != null)
+                    {
+                        foreach (var brand in ViewBag.Brands)
+                        {
+                            <li class="list-group-item px-0">@brand.Name</li>
+                        }
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4" id="vue-app">
+        <div class="card settings-card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Dotări Auto (SPA)</h5>
+                <span class="badge">{{ features.length }}</span>
+            </div>
+            <div class="card-body">
+                <div class="input-group mb-3">
+                    <input type="text" v-model="newFeatureName" @@keyup.enter="addFeature" class="form-control" placeholder="Ex: Navigație GPS..." :disabled="isLoading" />
+                    <button @@click="addFeature" class="btn btn-primary" :disabled="!newFeatureName || isLoading">Adaugă</button>
+                </div>
+                <div v-if="errorMessage" class="alert alert-danger py-2 mb-3" style="font-size: 0.85rem;">{{ errorMessage }}</div>
+                <div v-if="isLoading" class="text-center text-muted py-3" style="font-size: 0.85rem;">Se încarcă...</div>
+                <ul v-else class="list-group list-group-flush">
+                    <li v-if="features.length === 0" class="list-group-item px-0 text-muted" style="font-size: 0.85rem;">Nicio dotare adăugată.</li>
+                    <li v-for="feature in features" :key="feature.id" class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                        {{ feature.name }}
+                        <button @@click="deleteFeature(feature.id)" class="btn btn-sm btn-outline-danger" :disabled="isLoading">Șterge</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script>
+        const { createApp, ref, onMounted } = Vue;
+        createApp({
+            setup() {
+                const features = ref([]);
+                const newFeatureName = ref('');
+                const isLoading = ref(false);
+                const errorMessage = ref('');
+
+                const loadFeatures = async () => {
+                    isLoading.value = true;
+                    errorMessage.value = '';
+                    try {
+                        const response = await fetch('/api/features');
+                        if (!response.ok) throw new Error('Eroare la încărcarea dotărilor.');
+                        features.value = await response.json();
+                    } catch (err) {
+                        errorMessage.value = err.message;
+                    } finally {
+                        isLoading.value = false;
+                    }
+                };
+
+                const addFeature = async () => {
+                    if (!newFeatureName.value.trim()) return;
+                    isLoading.value = true;
+                    errorMessage.value = '';
+                    try {
+                        const response = await fetch('/api/features', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ name: newFeatureName.value.trim() })
+                        });
+                        if (!response.ok) throw new Error('Eroare la adăugarea dotării.');
+                        newFeatureName.value = '';
+                        await loadFeatures();
+                    } catch (err) {
+                        errorMessage.value = err.message;
+                        isLoading.value = false;
+                    }
+                };
+
+                const deleteFeature = async (id) => {
+                    isLoading.value = true;
+                    errorMessage.value = '';
+                    try {
+                        const response = await fetch(`/api/features/${id}`, { method: 'DELETE' });
+                        if (!response.ok) throw new Error('Eroare la ștergerea dotării.');
+                        await loadFeatures();
+                    } catch (err) {
+                        errorMessage.value = err.message;
+                        isLoading.value = false;
+                    }
+                };
+
+                onMounted(() => loadFeatures());
+                return { features, newFeatureName, isLoading, errorMessage, addFeature, deleteFeature };
+            }
+        }).mount('#vue-app');
+    </script>
+}

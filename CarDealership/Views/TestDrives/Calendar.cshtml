@@ -1,0 +1,91 @@
+@model List<CarDealership.Models.TestDrive>
+@{
+    ViewData["Title"] = "Calendar Test Drive-uri";
+}
+
+<h2 class="mb-4">Calendar Test Drive-uri</h2>
+
+<div class="row mb-5">
+    <div class="col-md-4 mb-3">
+        <div class="card h-100" style="background-color: #1a1a1a; color: white;">
+            <div class="card-body text-center py-4">
+                <p class="text-uppercase mb-2" style="letter-spacing: 0.1em; font-size: 0.8rem; color: rgba(255,255,255,0.6);">Total</p>
+                <h2 class="fw-bold mb-0">@Model.Count</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="card h-100" style="background-color: #7a3810; color: white;">
+            <div class="card-body text-center py-4">
+                <p class="text-uppercase mb-2" style="letter-spacing: 0.1em; font-size: 0.8rem; color: rgba(255,255,255,0.6);">În așteptare</p>
+                <h2 class="fw-bold mb-0">@Model.Count(t => !t.IsConfirmed)</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="card h-100" style="background-color: #1a4d2b; color: white;">
+            <div class="card-body text-center py-4">
+                <p class="text-uppercase mb-2" style="letter-spacing: 0.1em; font-size: 0.8rem; color: rgba(255,255,255,0.6);">Confirmate</p>
+                <h2 class="fw-bold mb-0">@Model.Count(t => t.IsConfirmed)</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="text-center py-5 text-muted">
+        <h4>Nu există test drive-uri programate.</h4>
+    </div>
+}
+else
+{
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Client</th>
+                        <th>Mașină</th>
+                        <th>Data și Ora</th>
+                        <th>Observații</th>
+                        <th class="text-center">Status</th>
+                        <th class="text-center">Acțiuni</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var td in Model)
+                    {
+                        <tr>
+                            <td>
+                                <strong>@td.User?.FullName</strong>
+                                <small class="text-muted d-block">@td.User?.Email</small>
+                            </td>
+                            <td>@td.Car?.Brand?.Name @td.Car?.ModelName</td>
+                            <td>@td.ScheduledAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
+                            <td><small>@td.Notes</small></td>
+                            <td class="text-center">
+                                <span class="badge" style="background-color: @(td.IsConfirmed ? "#1a4d2b" : "#7a3810"); font-size: 0.8rem; padding: 0.4rem 0.6rem;">
+                                    @(td.IsConfirmed ? "Confirmat" : "În așteptare")
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                @if (!td.IsConfirmed)
+                                {
+                                    <form asp-action="Confirm" method="post" class="d-inline">
+                                        <input type="hidden" name="id" value="@td.Id" />
+                                        <button type="submit" class="btn btn-sm btn-primary">Confirmă</button>
+                                    </form>
+                                }
+                                <form asp-action="Delete" method="post" class="d-inline" onsubmit="return confirm('Ștergi acest test drive?')">
+                                    <input type="hidden" name="id" value="@td.Id" />
+                                    <button type="submit" class="btn btn-sm btn-outline-secondary">Șterge</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

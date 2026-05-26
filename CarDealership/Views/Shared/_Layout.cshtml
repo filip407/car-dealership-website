@@ -1,76 +1,87 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="ro">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - CarDealership</title>
+    <title>@ViewData["Title"] - Audi Center</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="~/favicon.ico" asp-append-version="true" />
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-controller="Home" asp-action="Index">CarDealership</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+        <nav class="navbar navbar-expand-sm navbar-dark audi-navbar">
+            <div class="container">
+                <a class="navbar-brand d-flex align-items-center gap-2" asp-controller="Home" asp-action="Index">
+                    <svg width="36" height="36" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="20" cy="50" r="17" stroke="white" stroke-width="4.5" fill="none"/>
+                        <circle cx="40" cy="50" r="17" stroke="white" stroke-width="4.5" fill="none"/>
+                        <circle cx="60" cy="50" r="17" stroke="white" stroke-width="4.5" fill="none"/>
+                        <circle cx="80" cy="50" r="17" stroke="white" stroke-width="4.5" fill="none"/>
+                    </svg>
+                    <span class="audi-brand-text">Audi Center</span>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Cars" asp-action="Index">Mașini</a>
+                            <a class="nav-link" asp-controller="Home" asp-action="Index">Acasă</a>
                         </li>
-                        @if (User.Identity?.IsAuthenticated == true && User.IsInRole("Admin"))
+                        @if (User.Identity != null && User.Identity.IsAuthenticated)
                         {
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Brands" asp-action="Index">Mărci</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Features" asp-action="Index">Dotări (SPA)</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Admins" asp-action="Create">Adaugă Agent</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Statistics" asp-action="Index">Statistici</a>
-                        </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Cars" asp-action="Index">Modele</a>
+                            </li>
+                            if (User.IsInRole("Customer"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Wishlist" asp-action="Index">Lista Mea</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="TestDrives" asp-action="MyTestDrives">Test Drive-uri</a>
+                                </li>
+                            }
+                            if (User.IsInRole("Admin"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Statistics" asp-action="Index">Statistici</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="TestDrives" asp-action="Calendar">Calendar TD</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Settings" asp-action="Index">Setări</a>
+                                </li>
+                            }
                         }
                     </ul>
-                    <ul class="navbar-nav">
-                        @if (User.Identity?.IsAuthenticated == true)
-                        {
-                        <li class="nav-item">
-                            <span class="nav-link text-dark">Salut, @User.Identity.Name!</span>
-                        </li>
-                        <li class="nav-item">
-                            <form class="form-inline" asp-controller="Auth" asp-action="Logout" method="post">
-                                <button type="submit" class="nav-link btn btn-link text-dark">Logout</button>
-                            </form>
-                        </li>
-                        }
-                        else
-                        {
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Auth" asp-action="Login">Login</a>
-                        </li>
-                        }
-                    </ul>
+                    <partial name="_LoginPartial" />
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
+
+    <div class="container mt-4 flex-grow-1">
+        <main role="main" class="pb-5">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - CarDealership
+    <footer class="audi-footer">
+        <div class="container text-center py-4">
+            <svg width="80" height="28" viewBox="0 0 100 40" fill="none" xmlns="http://www.w3.org/2000/svg" class="mb-2">
+                <circle cx="15" cy="20" r="13" stroke="#666" stroke-width="2.5" fill="none"/>
+                <circle cx="38" cy="20" r="13" stroke="#666" stroke-width="2.5" fill="none"/>
+                <circle cx="61" cy="20" r="13" stroke="#666" stroke-width="2.5" fill="none"/>
+                <circle cx="84" cy="20" r="13" stroke="#666" stroke-width="2.5" fill="none"/>
+            </svg>
+            <p class="text-muted mb-0 small">&copy; @DateTime.Now.Year Audi Center. Toate drepturile rezervate.</p>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

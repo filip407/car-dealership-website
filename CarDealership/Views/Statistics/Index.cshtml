@@ -1,12 +1,10 @@
-﻿@model List<CarDealership.Models.Sale>
+@model List<CarDealership.Models.Sale>
 @{
     ViewData["Title"] = "Statistici Vânzări";
-    
-    // Calcule globale
+
     var totalRevenue = Model.Sum(s => s.SalePrice);
     var totalCarsSold = Model.Count;
 
-    // Calcule grupate pe agenți
     var agentStats = Model
         .GroupBy(s => s.Agent?.FullName ?? "Agent Necunoscut")
         .Select(g => new {
@@ -21,31 +19,31 @@
 <h2 class="mb-4">Statistici și Performanță</h2>
 
 <div class="row mb-5">
-    <div class="col-md-6">
-        <div class="card bg-primary text-white shadow-sm h-100">
-            <div class="card-body text-center">
-                <h5 class="card-title">Total Încasări Firmă</h5>
-                <h2 class="display-5 fw-bold">@totalRevenue.ToString("C")</h2>
+    <div class="col-md-6 mb-3">
+        <div class="card h-100" style="background-color: #7a1a25; color: white;">
+            <div class="card-body text-center py-4">
+                <p class="text-uppercase mb-2" style="letter-spacing: 0.1em; font-size: 0.8rem; color: rgba(255,255,255,0.6);">Total Încasări Firmă</p>
+                <h2 class="fw-bold mb-0">@totalRevenue.ToString("C")</h2>
             </div>
         </div>
     </div>
-    <div class="col-md-6">
-        <div class="card bg-success text-white shadow-sm h-100">
-            <div class="card-body text-center">
-                <h5 class="card-title">Total Mașini Vândute</h5>
-                <h2 class="display-5 fw-bold">@totalCarsSold unități</h2>
+    <div class="col-md-6 mb-3">
+        <div class="card h-100" style="background-color: #1a3a5c; color: white;">
+            <div class="card-body text-center py-4">
+                <p class="text-uppercase mb-2" style="letter-spacing: 0.1em; font-size: 0.8rem; color: rgba(255,255,255,0.6);">Total Mașini Vândute</p>
+                <h2 class="fw-bold mb-0">@totalCarsSold <span style="font-size: 1.2rem; font-weight: 400;">unități</span></h2>
             </div>
         </div>
     </div>
 </div>
 
 <div class="card shadow-sm mb-5">
-    <div class="card-header bg-white">
-        <h4 class="mb-0">Performanță pe Angajat</h4>
+    <div class="card-header bg-white border-bottom">
+        <h5 class="mb-0">Performanță pe Angajat</h5>
     </div>
     <div class="card-body p-0">
         <table class="table table-hover mb-0">
-            <thead class="bg-light">
+            <thead>
                 <tr>
                     <th>Nume Agent</th>
                     <th class="text-center">Mașini Vândute</th>
@@ -58,7 +56,7 @@
                     <tr>
                         <td class="fw-bold">@stat.AgentName</td>
                         <td class="text-center">@stat.CarsSold</td>
-                        <td class="text-end text-success fw-bold">@stat.Revenue.ToString("C")</td>
+                        <td class="text-end fw-bold">@stat.Revenue.ToString("C")</td>
                     </tr>
                 }
                 @if (!agentStats.Any())
@@ -72,16 +70,16 @@
     </div>
 </div>
 
-<h4 class="mb-3">Istoric Tranzacții Recente</h4>
+<h5 class="mb-3">Istoric Tranzacții Recente</h5>
 <div class="list-group shadow-sm">
     @foreach (var sale in Model.Take(10))
     {
-        <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+        <div class="list-group-item d-flex justify-content-between align-items-center">
             <div>
                 <h6 class="mb-1">@sale.Car?.Brand?.Name @sale.Car?.ModelName</h6>
                 <small class="text-muted">Vândut de: @sale.Agent?.FullName pe @sale.SaleDate.ToString("dd.MM.yyyy")</small>
             </div>
-            <span class="badge bg-success rounded-pill fs-6">@sale.SalePrice.ToString("C")</span>
+            <span class="badge" style="background-color: #1a1a1a; font-size: 0.9rem; padding: 0.5rem 0.75rem;">@sale.SalePrice.ToString("C")</span>
         </div>
     }
 </div>

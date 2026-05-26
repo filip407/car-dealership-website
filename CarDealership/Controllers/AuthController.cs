@@ -31,7 +31,7 @@ public class AuthController : Controller
     {
         if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
         {
-            ModelState.AddModelError(string.Empty, "Toate c�mpurile sunt obligatorii.");
+            ModelState.AddModelError(string.Empty, "Toate câmpurile sunt obligatorii.");
             return View();
         }
 
@@ -43,6 +43,64 @@ public class AuthController : Controller
         }
 
         ModelState.AddModelError(string.Empty, "Date de autentificare invalide.");
+        return View();
+    }
+
+    [HttpGet]
+    public IActionResult Register()
+    {
+        if (User.Identity?.IsAuthenticated == true)
+        {
+            return RedirectToAction("Index", "Home");
+        }
+        return View();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Register(string fullName, string email, string password, string confirmPassword)
+    {
+        if (string.IsNullOrEmpty(fullName) || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+        {
+            ModelState.AddModelError(string.Empty, "Toate câmpurile sunt obligatorii.");
+            return View();
+        }
+
+        if (password != confirmPassword)
+        {
+            ModelState.AddModelError(string.Empty, "Parolele nu coincid.");
+            return View();
+        }
+
+        var existingUser = await _userManager.FindByEmailAsync(email);
+        if (existingUser != null)
+        {
+            ModelState.AddModelError(string.Empty, "Există deja un cont cu acest email.");
+            return View();
+        }
+
+        var newUser = new ApplicationUser
+        {
+            UserName = email,
+            Email = email,
+            FullName = fullName,
+            EmailConfirmed = true
+        };
+
+        var result = await _userManager.CreateAsync(newUser, password);
+
+        if (result.Succeeded)
+        {
+            await _userManager.AddToRoleAsync(newUser, "Customer");
+            await _signInManager.SignInAsync(newUser, isPersistent: false);
+            return RedirectToAction("Index", "Home");
+        }
+
+        foreach (var error in result.Errors)
+        {
+            ModelState.AddModelError(string.Empty, error.Description);
+        }
+
         return View();
     }
 

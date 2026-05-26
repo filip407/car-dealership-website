@@ -1,13 +1,55 @@
-﻿@{
+@{
     ViewData["Title"] = "Acasă";
 }
 
-<div class="text-center mt-5">
-    <h1 class="display-4">Bun venit la CarDealership!</h1>
-    <p>Sistemul de gestiune auto pentru agenții de vânzări.</p>
+<div class="audi-hero text-center mb-5">
+    <div class="py-2">
+        <svg width="120" height="44" viewBox="0 0 100 40" fill="none" xmlns="http://www.w3.org/2000/svg" class="mb-4">
+            <circle cx="15" cy="20" r="13" stroke="white" stroke-width="2.5" fill="none"/>
+            <circle cx="38" cy="20" r="13" stroke="white" stroke-width="2.5" fill="none"/>
+            <circle cx="61" cy="20" r="13" stroke="white" stroke-width="2.5" fill="none"/>
+            <circle cx="84" cy="20" r="13" stroke="white" stroke-width="2.5" fill="none"/>
+        </svg>
+        <p class="subtitle mb-3">Vorsprung durch Technik</p>
+        <h1 class="mb-3">Audi Center</h1>
+        <p class="lead mb-5" style="color: rgba(255,255,255,0.75);">Descoperă cea mai bună selecție de modele Audi. Eleganță, performanță, inovație.</p>
+        @if (User.Identity?.IsAuthenticated != true)
+        {
+            <div class="d-flex justify-content-center gap-3">
+                <a class="btn btn-light px-4 py-2" asp-controller="Auth" asp-action="Register">Crează Cont</a>
+                <a class="btn btn-outline-light px-4 py-2" asp-controller="Auth" asp-action="Login">Autentificare</a>
+            </div>
+        }
+        else
+        {
+            <a class="btn btn-light px-4 py-2" asp-controller="Cars" asp-action="Index">Vezi Modele Disponibile</a>
+        }
+    </div>
+</div>
 
-    @if (User.Identity?.IsAuthenticated != true)
-    {
-    <a class="btn btn-primary mt-3" asp-controller="Auth" asp-action="Login">Autentificare Agent</a>
-    }
+<div class="row text-center">
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 p-4">
+            <div class="card-body">
+                <h5 class="fw-bold mb-3">Inventar Exclusiv</h5>
+                <p class="text-muted">Explorează colecția noastră de modele Audi noi și verificate. Fiecare mașină, o experiență.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 p-4">
+            <div class="card-body">
+                <h5 class="fw-bold mb-3">Test Drive</h5>
+                <p class="text-muted">Programează un test drive la sediul nostru și simte diferența la volan. Simplu, rapid, gratuit.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 p-4">
+            <div class="card-body">
+                <h5 class="fw-bold mb-3">Lista de Dorințe</h5>
+                <p class="text-muted">Salvează modelele preferate și urmărește-le. Găsești mașina visurilor tale, noi o păstrăm pentru tine.</p>
+            </div>
+        </div>
+    </div>
 </div>

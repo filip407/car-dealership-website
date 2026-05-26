@@ -1,4 +1,5 @@
 using CarDealership.Data;
+using CarDealership.Middleware;
 using CarDealership.Models;
 using CarDealership.Repositories;
 using CarDealership.Services;
@@ -54,6 +55,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();

@@ -1,0 +1,51 @@
+@model List<CarDealership.Models.WishlistItem>
+@{
+    ViewData["Title"] = "Lista Mea de Dorințe";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Lista Mea de Dorințe</h2>
+    <span class="badge bg-dark fs-6">@Model.Count mașini</span>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="text-center py-5 text-muted">
+        <h4>Lista ta de dorințe este goală.</h4>
+        <a asp-controller="Cars" asp-action="Index" class="btn btn-primary mt-3">Vezi Stocul</a>
+    </div>
+}
+else
+{
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    @if (!string.IsNullOrEmpty(item.Car?.ImagePath))
+                    {
+                        <img src="@item.Car.ImagePath" class="card-img-top" alt="@item.Car.ModelName" style="height: 200px; object-fit: cover;" />
+                    }
+                    else
+                    {
+                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                            <span class="text-muted">Fără imagine</span>
+                        </div>
+                    }
+                    <div class="card-body">
+                        <h5 class="card-title">@item.Car?.Brand?.Name @item.Car?.ModelName</h5>
+                        <p class="card-text text-success fw-bold fs-5">@item.Car?.Price.ToString("C")</p>
+                        <p class="card-text"><small class="text-muted">An: @item.Car?.Year</small></p>
+                    </div>
+                    <div class="card-footer bg-white border-top-0 d-flex justify-content-between pb-3">
+                        <a asp-controller="Cars" asp-action="Details" asp-route-id="@item.CarId" class="btn btn-sm btn-outline-primary">Detalii</a>
+                        <form asp-controller="Wishlist" asp-action="RemoveFromList" method="post">
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Elimină</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

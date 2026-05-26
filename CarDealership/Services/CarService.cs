@@ -1,93 +1,97 @@
+using CarDealership.Data;
 using CarDealership.Models;
-using CarDealership.Repositories;
-using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace CarDealership.Services;
 
 public class CarService : ICarService
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly AppDbContext _context;
+    private readonly ILogger<CarService> _logger;
 
-    public CarService(IUnitOfWork unitOfWork)
+    public CarService(AppDbContext context, ILogger<CarService> logger)
     {
-        _unitOfWork = unitOfWork;
+        _context = context;
+        _logger = logger;
     }
 
-    public async Task<List<Car>> GetAllCarsAsync(CancellationToken cancellationToken = default)
+    public async Task<List<Car>> GetAllCarsAsync(CancellationToken cancellationToken)
     {
-        return await _unitOfWork.Cars.GetAllWithDetailsAsync(cancellationToken);
+        return await _context.Cars
+            .Include(c => c.Brand)
+            .Include(c => c.Features)
+            .Where(c => !c.IsSold)
+            .ToListAsync(cancellationToken);
     }
 
-    public async Task<Car?> GetCarByIdAsync(int id, CancellationToken cancellationToken = default)
+    public async Task<Car?> GetCarByIdAsync(int id, CancellationToken cancellationToken)
     {
-        return await _unitOfWork.Cars.GetByIdWithDetailsAsync(id, cancellationToken);
+        return await _context.Cars
+            .Include(c => c.Brand)
+            .Include(c => c.Features)
+            .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
     }
 
-    public async Task<List<Car>> GetCarsByBrandAsync(int brandId, CancellationToken cancellationToken = default)
-    {
-        return await _unitOfWork.Cars.GetByBrandAsync(brandId, cancellationToken);
-    }
-
-    public async Task CreateCarAsync(Car car, IFormFile? imageFile, string webRootPath, CancellationToken cancellationToken = default)
+    public async Task CreateCarAsync(Car car, IFormFile? imageFile, string webRootPath, CancellationToken cancellationToken)
     {
         if (imageFile != null && imageFile.Length > 0)
         {
-            car.ImagePath = await SaveImageAsync(imageFile, webRootPath);
+            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
+            var filePath = Path.Combine(webRootPath, "uploads", fileName);
+
+            Directory.CreateDirectory(Path.Combine(webRootPath, "uploads"));
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await imageFile.CopyToAsync(stream, cancellationToken);
+            }
+            car.ImagePath = "/uploads/" + fileName;
         }
 
-        await _unitOfWork.Cars.AddAsync(car, cancellationToken);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        _context.Cars.Add(car);
+        await _context.SaveChangesAsync(cancellationToken);
+
+        _logger.LogInformation("O masina noua a fost adaugata in baza de date: {Model}", car.ModelName);
     }
 
-    public async Task UpdateCarAsync(Car car, IFormFile? imageFile, string webRootPath, CancellationToken cancellationToken = default)
+    public async Task UpdateCarAsync(Car car, IFormFile? imageFile, string webRootPath, CancellationToken cancellationToken)
     {
         if (imageFile != null && imageFile.Length > 0)
         {
-            DeleteImage(car.ImagePath, webRootPath);
-            car.ImagePath = await SaveImageAsync(imageFile, webRootPath);
+            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
+            var uploadsPath = Path.Combine(webRootPath, "uploads");
+            Directory.CreateDirectory(uploadsPath);
+            var filePath = Path.Combine(uploadsPath, fileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await imageFile.CopyToAsync(stream, cancellationToken);
+            }
+            car.ImagePath = "/uploads/" + fileName;
         }
 
-        _unitOfWork.Cars.Update(car);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        _context.Cars.Update(car);
+        await _context.SaveChangesAsync(cancellationToken);
+
+        _logger.LogInformation("Masina cu ID-ul {Id} a fost actualizata.", car.Id);
     }
 
-    public async Task DeleteCarAsync(int id, string webRootPath, CancellationToken cancellationToken = default)
+    public async Task DeleteCarAsync(int id, string webRootPath, CancellationToken cancellationToken)
     {
-        var car = await _unitOfWork.Cars.GetByIdAsync(id, cancellationToken);
+        var car = await _context.Cars.FindAsync(new object[] { id }, cancellationToken);
         if (car != null)
         {
-            DeleteImage(car.ImagePath, webRootPath);
-            _unitOfWork.Cars.Delete(car);
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            _context.Cars.Remove(car);
+            await _context.SaveChangesAsync(cancellationToken);
+
+            _logger.LogInformation("Masina cu ID-ul {Id} a fost stearsa.", id);
         }
     }
-
-    private static async Task<string> SaveImageAsync(IFormFile imageFile, string webRootPath)
+    public async Task<List<Car>> GetCarsByBrandAsync(int brandId, CancellationToken cancellationToken)
     {
-        var uploadsFolder = Path.Combine(webRootPath, "uploads");
-        if (!Directory.Exists(uploadsFolder))
-        {
-            Directory.CreateDirectory(uploadsFolder);
-        }
-
-        var uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(imageFile.FileName);
-        var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-        using var fileStream = new FileStream(filePath, FileMode.Create);
-        await imageFile.CopyToAsync(fileStream);
-
-        return Path.Combine("uploads", uniqueFileName).Replace('\\', '/');
-    }
-
-    private static void DeleteImage(string? imagePath, string webRootPath)
-    {
-        if (!string.IsNullOrEmpty(imagePath))
-        {
-            var fullPath = Path.Combine(webRootPath, imagePath.Replace('/', '\\'));
-            if (File.Exists(fullPath))
-            {
-                File.Delete(fullPath);
-            }
-        }
+        return await _context.Cars
+            .Include(c => c.Brand)
+            .Include(c => c.Features)
+            .Where(c => c.BrandId == brandId && !c.IsSold)
+            .ToListAsync(cancellationToken);
     }
 }

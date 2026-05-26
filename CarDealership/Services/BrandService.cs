@@ -6,10 +6,12 @@ namespace CarDealership.Services;
 public class BrandService : IBrandService
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ILogger<BrandService> _logger;
 
-    public BrandService(IUnitOfWork unitOfWork)
+    public BrandService(IUnitOfWork unitOfWork, ILogger<BrandService> logger)
     {
         _unitOfWork = unitOfWork;
+        _logger = logger;
     }
 
     public async Task<List<Brand>> GetAllBrandsAsync(CancellationToken cancellationToken = default)
@@ -26,12 +28,14 @@ public class BrandService : IBrandService
     {
         await _unitOfWork.Brands.AddAsync(brand, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+        _logger.LogInformation("Marca noua adaugata: {Name}", brand.Name);
     }
 
     public async Task UpdateBrandAsync(Brand brand, CancellationToken cancellationToken = default)
     {
         _unitOfWork.Brands.Update(brand);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+        _logger.LogInformation("Marca cu ID-ul {Id} a fost actualizata.", brand.Id);
     }
 
     public async Task DeleteBrandAsync(int id, CancellationToken cancellationToken = default)
@@ -41,6 +45,7 @@ public class BrandService : IBrandService
         {
             _unitOfWork.Brands.Delete(brand);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+            _logger.LogInformation("Marca cu ID-ul {Id} a fost stearsa.", id);
         }
     }
 }
