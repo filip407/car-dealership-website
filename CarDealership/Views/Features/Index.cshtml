@@ -12,18 +12,22 @@
             <div class="card-body">
 
                 <div class="input-group mb-4">
-                    <input type="text" v-model="newFeatureName" @@keyup.enter="addFeature" class="form-control" placeholder="Ex: Scaune încălzite, Navigație GPS..." />
-                    <button @@click="addFeature" class="btn btn-success" :disabled="!newFeatureName">Adaugă Dotare</button>
+                    <input type="text" v-model="newFeatureName" @@keyup.enter="addFeature" class="form-control" placeholder="Ex: Scaune încălzite, Navigație GPS..." :disabled="isLoading" />
+                    <button @@click="addFeature" class="btn btn-success" :disabled="!newFeatureName || isLoading">Adaugă Dotare</button>
                 </div>
 
-                <ul class="list-group">
+                <div v-if="errorMessage" class="alert alert-danger py-2 mb-3">{{ errorMessage }}</div>
+
+                <div v-if="isLoading" class="text-center text-muted py-3">Se încarcă...</div>
+
+                <ul v-else class="list-group">
                     <li v-for="feature in features" :key="feature.id" class="list-group-item d-flex justify-content-between align-items-center">
                         {{ feature.name }}
-                        <button @@click="deleteFeature(feature.id)" class="btn btn-sm btn-outline-danger">Șterge</button>
+                        <button @@click="deleteFeature(feature.id)" class="btn btn-sm btn-outline-danger" :disabled="isLoading">Șterge</button>
                     </li>
                 </ul>
 
-                <div v-if="features.length === 0" class="text-center text-muted mt-3">
+                <div v-if="!isLoading && features.length === 0" class="text-center text-muted mt-3">
                     Nu există nicio dotare în baza de date. Adaugă una mai sus!
                 </div>
 
@@ -41,37 +45,53 @@
             setup() {
                 const features = ref([]);
                 const newFeatureName = ref('');
+                const isLoading = ref(false);
+                const errorMessage = ref('');
 
                 const loadFeatures = async () => {
-                    const response = await fetch('/api/features');
-                    if (response.ok) {
+                    isLoading.value = true;
+                    errorMessage.value = '';
+                    try {
+                        const response = await fetch('/api/features');
+                        if (!response.ok) throw new Error('Eroare la încărcarea dotărilor.');
                         features.value = await response.json();
+                    } catch (err) {
+                        errorMessage.value = err.message;
+                    } finally {
+                        isLoading.value = false;
                     }
                 };
 
                 const addFeature = async () => {
                     if (!newFeatureName.value) return;
-
-                    const response = await fetch('/api/features', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ name: newFeatureName.value })
-                    });
-
-                    if (response.ok) {
+                    isLoading.value = true;
+                    errorMessage.value = '';
+                    try {
+                        const response = await fetch('/api/features', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ name: newFeatureName.value })
+                        });
+                        if (!response.ok) throw new Error('Eroare la adăugarea dotării.');
                         newFeatureName.value = '';
                         await loadFeatures();
+                    } catch (err) {
+                        errorMessage.value = err.message;
+                        isLoading.value = false;
                     }
                 };
 
                 const deleteFeature = async (id) => {
                     if (confirm("Sigur vrei să ștergi această dotare?")) {
-                        const response = await fetch(`/api/features/${id}`, {
-                            method: 'DELETE'
-                        });
-
-                        if (response.ok) {
+                        isLoading.value = true;
+                        errorMessage.value = '';
+                        try {
+                            const response = await fetch(`/api/features/${id}`, { method: 'DELETE' });
+                            if (!response.ok) throw new Error('Eroare la ștergerea dotării.');
                             await loadFeatures();
+                        } catch (err) {
+                            errorMessage.value = err.message;
+                            isLoading.value = false;
                         }
                     }
                 };
@@ -83,6 +103,8 @@
                 return {
                     features,
                     newFeatureName,
+                    isLoading,
+                    errorMessage,
                     addFeature,
                     deleteFeature
                 };

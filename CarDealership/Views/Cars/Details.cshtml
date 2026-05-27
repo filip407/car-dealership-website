@@ -2,6 +2,7 @@
 @{
     ViewData["Title"] = "Detalii Mașină";
     bool isInWishlist = ViewBag.IsInWishlist == true;
+    string backUrl = ViewBag.ReturnUrl as string ?? Url.Action("Index", "Cars")!;
 }
 
 <div class="card shadow-sm mt-2">
@@ -42,7 +43,7 @@
                 </ul>
 
                 <div class="d-flex flex-wrap gap-2">
-                    <a asp-action="Index" class="btn btn-outline-secondary">Înapoi</a>
+                    <a href="@backUrl" class="btn btn-outline-secondary">Înapoi</a>
 
                     @if (User.IsInRole("Customer"))
                     {

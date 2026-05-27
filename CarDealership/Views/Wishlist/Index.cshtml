@@ -38,7 +38,7 @@ else
                         <p class="card-text"><small class="text-muted">An: @item.Year</small></p>
                     </div>
                     <div class="card-footer bg-white border-top-0 d-flex justify-content-between pb-3">
-                        <a asp-controller="Cars" asp-action="Details" asp-route-id="@item.CarId" class="btn btn-sm btn-outline-primary">Detalii</a>
+                        <a asp-controller="Cars" asp-action="Details" asp-route-id="@item.CarId" asp-route-returnUrl="@Url.Action("Index", "Wishlist")" class="btn btn-sm btn-outline-primary">Detalii</a>
                         <form asp-controller="Wishlist" asp-action="RemoveFromList" method="post">
                             <input type="hidden" name="id" value="@item.Id" />
                             <button type="submit" class="btn btn-sm btn-outline-danger">Elimină</button>

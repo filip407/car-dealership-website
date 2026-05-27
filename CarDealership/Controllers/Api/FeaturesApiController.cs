@@ -1,6 +1,7 @@
 using CarDealership.DTOs;
 using CarDealership.Mappings;
 using CarDealership.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CarDealership.Controllers.Api;
@@ -40,8 +41,11 @@ public class FeaturesApiController : ControllerBase
 
     // POST: /api/features
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(typeof(FeatureDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<FeatureDto>> Create([FromBody] CreateFeatureDto dto, CancellationToken cancellationToken)
     {
         if (!ModelState.IsValid)
@@ -55,8 +59,11 @@ public class FeaturesApiController : ControllerBase
 
     // PUT: /api/features/5
     [HttpPut("{id:int}")]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(int id, [FromBody] UpdateFeatureDto dto, CancellationToken cancellationToken)
     {
@@ -75,7 +82,10 @@ public class FeaturesApiController : ControllerBase
 
     // DELETE: /api/features/5
     [HttpDelete("{id:int}")]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
     {

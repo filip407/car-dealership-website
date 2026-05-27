@@ -39,7 +39,7 @@ public class CarsController : Controller
 
     [Authorize]
     public async Task<IActionResult> Details(int id, CancellationToken cancellationToken,
-        [FromServices] AppDbContext context)
+        [FromServices] AppDbContext context, string? returnUrl = null)
     {
         var car = await _carService.GetCarByIdAsync(id, cancellationToken);
         if (car == null) return NotFound();
@@ -47,6 +47,7 @@ public class CarsController : Controller
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         ViewBag.IsInWishlist = await context.WishlistItems
             .AnyAsync(w => w.UserId == userId && w.CarId == id, cancellationToken);
+        ViewBag.ReturnUrl = returnUrl;
 
         return View(car.ToViewModel());
     }
@@ -192,6 +193,14 @@ public class CarsController : Controller
         context.Sales.Add(sale);
         car.IsSold = true;
         await _carService.UpdateCarAsync(car, null, _webHostEnvironment.WebRootPath, cancellationToken);
+
+        // Curata wishlist-ul si test drive-urile pentru masina vanduta
+        var wishlistItems = context.WishlistItems.Where(w => w.CarId == id);
+        context.WishlistItems.RemoveRange(wishlistItems);
+
+        var testDrives = context.TestDrives.Where(t => t.CarId == id);
+        context.TestDrives.RemoveRange(testDrives);
+
         await context.SaveChangesAsync(cancellationToken);
 
         return RedirectToAction(nameof(Index));
