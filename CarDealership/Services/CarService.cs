@@ -25,10 +25,6 @@ public class CarService : ICarService
         return await _unitOfWork.Cars.GetByIdWithDetailsAsync(id, cancellationToken);
     }
 
-    public async Task<List<Car>> GetCarsByBrandAsync(int brandId, CancellationToken cancellationToken = default)
-    {
-        return await _unitOfWork.Cars.GetByBrandAsync(brandId, cancellationToken);
-    }
 
     public async Task CreateCarAsync(Car car, IFormFile? imageFile, string webRootPath, CancellationToken cancellationToken = default)
     {
