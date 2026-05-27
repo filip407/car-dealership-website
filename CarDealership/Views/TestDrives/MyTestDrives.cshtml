@@ -22,7 +22,7 @@ else
     <div class="list-group shadow-sm">
         @foreach (var td in Model)
         {
-            <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+            <div class="list-group-item d-flex justify-content-between align-items-center">
                 <div>
                     <h6 class="mb-1">@td.BrandName @td.ModelName</h6>
                     <small class="text-muted">Programat pentru: <strong>@td.ScheduledAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</strong></small>
@@ -31,9 +31,15 @@ else
                         <p class="mb-0 mt-1 text-muted small">@td.Notes</p>
                     }
                 </div>
-                <span class="badge @(td.IsConfirmed ? "bg-success" : "bg-warning text-dark")">
-                    @(td.IsConfirmed ? "Confirmat" : "În așteptare")
-                </span>
+                <div class="d-flex align-items-center gap-3">
+                    <span class="badge @(td.IsConfirmed ? "bg-success" : "bg-warning text-dark")">
+                        @(td.IsConfirmed ? "Confirmat" : "În așteptare")
+                    </span>
+                    <form asp-action="Cancel" method="post" onsubmit="return confirm('Sigur vrei să anulezi acest test drive?');">
+                        <input type="hidden" name="id" value="@td.Id" />
+                        <button type="submit" class="btn btn-sm btn-outline-danger">Anulează</button>
+                    </form>
+                </div>
             </div>
         }
     </div>

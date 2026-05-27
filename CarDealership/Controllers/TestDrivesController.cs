@@ -52,6 +52,16 @@ public class TestDrivesController : Controller
 
         if (car == null) return NotFound();
 
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var alreadyBooked = await _context.TestDrives
+            .AnyAsync(t => t.CarId == carId && t.UserId == userId, cancellationToken);
+
+        if (alreadyBooked)
+        {
+            TempData["Error"] = "Ai deja un test drive programat pentru această mașină.";
+            return RedirectToAction("Details", "Cars", new { id = carId });
+        }
+
         var viewModel = new BookTestDriveViewModel
         {
             CarId = car.Id,
@@ -73,6 +83,15 @@ public class TestDrivesController : Controller
         if (car == null) return NotFound();
 
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        var alreadyBooked = await _context.TestDrives
+            .AnyAsync(t => t.CarId == carId && t.UserId == userId, cancellationToken);
+
+        if (alreadyBooked)
+        {
+            TempData["Error"] = "Ai deja un test drive programat pentru această mașină.";
+            return RedirectToAction("Details", "Cars", new { id = carId });
+        }
 
         var testDrive = new TestDrive
         {
@@ -112,6 +131,24 @@ public class TestDrivesController : Controller
         }).ToList();
 
         return View(viewModels);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Customer")]
+    public async Task<IActionResult> Cancel(int id, CancellationToken cancellationToken)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var testDrive = await _context.TestDrives
+            .FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId, cancellationToken);
+
+        if (testDrive == null) return NotFound();
+
+        _context.TestDrives.Remove(testDrive);
+        await _context.SaveChangesAsync(cancellationToken);
+
+        TempData["Success"] = "Test drive-ul a fost anulat cu succes.";
+        return RedirectToAction(nameof(MyTestDrives));
     }
 
     [HttpPost]
