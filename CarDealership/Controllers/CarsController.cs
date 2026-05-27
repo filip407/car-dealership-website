@@ -78,8 +78,8 @@ public class CarsController : Controller
             {
                 BrandId = viewModel.BrandId,
                 ModelName = viewModel.ModelName,
-                Year = viewModel.Year,
-                Price = viewModel.Price,
+                Year = viewModel.Year ?? 0,
+                Price = viewModel.Price ?? 0,
                 AgentId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty
             };
 

@@ -18,12 +18,12 @@ public class CreateCarViewModel
     [Required(ErrorMessage = "Anul este obligatoriu")]
     [Range(1900, 2027, ErrorMessage = "Anul trebuie să fie între 1900 și 2027")]
     [Display(Name = "An Fabricație")]
-    public int Year { get; set; }
+    public int? Year { get; set; }
 
     [Required(ErrorMessage = "Prețul este obligatoriu")]
     [Range(1, 10000000, ErrorMessage = "Prețul trebuie să fie pozitiv")]
     [Display(Name = "Preț (EUR)")]
-    public decimal Price { get; set; }
+    public decimal? Price { get; set; }
 
     [Display(Name = "Dotări")]
     public int[] SelectedFeatureIds { get; set; } = Array.Empty<int>();
