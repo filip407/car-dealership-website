@@ -19,7 +19,7 @@ public class UnitOfWork : IUnitOfWork
     }
 
     public ICarRepository Cars => _cars ??= new CarRepository(_context);
-    public IRepository<Brand> Brands => _brands ??= new BrandRepository(_context);
+    public IRepository<Brand> Brands => _brands ??= new Repository<Brand>(_context);
     public IFeatureRepository Features => _features ??= new FeatureRepository(_context);
     public IWishlistRepository Wishlists => _wishlists ??= new WishlistRepository(_context);
     public ITestDriveRepository TestDrives => _testDrives ??= new TestDriveRepository(_context);
