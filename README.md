@@ -162,3 +162,21 @@ An admin account is seeded automatically on first startup:
 | Password | `Admin123!` |
  
 ---
+
+## Setup
+
+Requires .NET 9 SDK and a running PostgreSQL instance. Set the connection string in `appsettings.json`:
+
+```json
+"ConnectionStrings": {
+  "DefaultConnection": "Host=localhost;Port=5432;Database=cardealership_db;Username=postgres;Password=YOUR_PASSWORD"
+}
+```
+
+Then run:
+
+```bash
+dotnet run
+```
+
+Migrations and the admin seed run automatically on startup.
