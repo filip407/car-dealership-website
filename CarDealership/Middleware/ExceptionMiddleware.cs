@@ -14,9 +14,17 @@ public class ExceptionMiddleware
         catch (Exception ex)
         {
             logger.LogError(ex, "A aparut o eroare neasteptata.");
-            context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-            await context.Response.WriteAsync(JsonSerializer.Serialize(new { error = "A aparut o eroare neasteptata." }));
+
+            if (context.Request.Path.StartsWithSegments("/api"))
+            {
+                context.Response.ContentType = "application/json";
+                await context.Response.WriteAsync(JsonSerializer.Serialize(new { error = "A aparut o eroare neasteptata." }));
+            }
+            else
+            {
+                context.Response.Redirect("/Home/Error");
+            }
         }
     }
 }

@@ -1,29 +1,23 @@
-using CarDealership.Data;
+using CarDealership.Services;
 using CarDealership.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace CarDealership.Controllers;
 
 [Authorize(Roles = "Admin")]
 public class StatisticsController : Controller
 {
-    private readonly AppDbContext _context;
+    private readonly ISaleService _saleService;
 
-    public StatisticsController(AppDbContext context)
+    public StatisticsController(ISaleService saleService)
     {
-        _context = context;
+        _saleService = saleService;
     }
 
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(CancellationToken cancellationToken)
     {
-        var sales = await _context.Sales
-            .Include(s => s.Agent)
-            .Include(s => s.Car)
-            .ThenInclude(c => c!.Brand)
-            .OrderByDescending(s => s.SaleDate)
-            .ToListAsync();
+        var sales = await _saleService.GetAllSalesAsync(cancellationToken);
 
         var viewModel = new StatisticsViewModel
         {

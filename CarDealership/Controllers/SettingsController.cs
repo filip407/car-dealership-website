@@ -26,6 +26,7 @@ public class SettingsController : Controller
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> CreateBrand(string name, CancellationToken cancellationToken)
     {
         if (!string.IsNullOrEmpty(name))
@@ -36,6 +37,7 @@ public class SettingsController : Controller
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> CreateAgent(string email, string fullName, string password)
     {
         if (!string.IsNullOrEmpty(email) && !string.IsNullOrEmpty(password))

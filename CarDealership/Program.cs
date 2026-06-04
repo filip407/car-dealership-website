@@ -32,6 +32,9 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IBrandService, BrandService>();
 builder.Services.AddScoped<ICarService, CarService>();
 builder.Services.AddScoped<IFeatureService, FeatureService>();
+builder.Services.AddScoped<IWishlistService, WishlistService>();
+builder.Services.AddScoped<ITestDriveService, TestDriveService>();
+builder.Services.AddScoped<ISaleService, SaleService>();
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
@@ -45,14 +48,15 @@ using (var scope = app.Services.CreateScope())
         await context.Database.MigrateAsync();
         await DbSeeder.SeedAdminUserAsync(services);
     }
-    catch (Exception)
+    catch (Exception ex)
     {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "A aparut o eroare la initializarea bazei de date.");
     }
 }
 
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
 

@@ -1,4 +1,5 @@
 using CarDealership.Models;
+using CarDealership.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,75 +20,57 @@ public class AuthController : Controller
     public IActionResult Login()
     {
         if (User.Identity?.IsAuthenticated == true)
-        {
             return RedirectToAction("Index", "Home");
-        }
-        return View();
+        return View(new LoginViewModel());
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Login(string email, string password, bool rememberMe)
+    public async Task<IActionResult> Login(LoginViewModel model)
     {
-        if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
-        {
-            ModelState.AddModelError(string.Empty, "Toate câmpurile sunt obligatorii.");
-            return View();
-        }
+        if (!ModelState.IsValid)
+            return View(model);
 
-        var result = await _signInManager.PasswordSignInAsync(email, password, rememberMe, lockoutOnFailure: false);
+        var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
 
         if (result.Succeeded)
-        {
             return RedirectToAction("Index", "Home");
-        }
 
         ModelState.AddModelError(string.Empty, "Date de autentificare invalide.");
-        return View();
+        return View(model);
     }
 
     [HttpGet]
     public IActionResult Register()
     {
         if (User.Identity?.IsAuthenticated == true)
-        {
             return RedirectToAction("Index", "Home");
-        }
-        return View();
+        return View(new RegisterViewModel());
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Register(string fullName, string email, string password, string confirmPassword)
+    public async Task<IActionResult> Register(RegisterViewModel model)
     {
-        if (string.IsNullOrEmpty(fullName) || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
-        {
-            ModelState.AddModelError(string.Empty, "Toate câmpurile sunt obligatorii.");
-            return View();
-        }
+        if (!ModelState.IsValid)
+            return View(model);
 
-        if (password != confirmPassword)
-        {
-            ModelState.AddModelError(string.Empty, "Parolele nu coincid.");
-            return View();
-        }
-
-        var existingUser = await _userManager.FindByEmailAsync(email);
+        var existingUser = await _userManager.FindByEmailAsync(model.Email);
         if (existingUser != null)
         {
-            ModelState.AddModelError(string.Empty, "Există deja un cont cu acest email.");
-            return View();
+            ModelState.AddModelError(nameof(model.Email), "Există deja un cont cu acest email.");
+            return View(model);
         }
 
         var newUser = new ApplicationUser
         {
-            UserName = email,
-            Email = email,
-            FullName = fullName,
+            UserName = model.Email,
+            Email = model.Email,
+            FullName = model.FullName,
             EmailConfirmed = true
         };
 
-        var result = await _userManager.CreateAsync(newUser, password);
+        var result = await _userManager.CreateAsync(newUser, model.Password);
 
         if (result.Succeeded)
         {
@@ -97,11 +80,9 @@ public class AuthController : Controller
         }
 
         foreach (var error in result.Errors)
-        {
             ModelState.AddModelError(string.Empty, error.Description);
-        }
 
-        return View();
+        return View(model);
     }
 
     [HttpPost]
