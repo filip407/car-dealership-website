@@ -1,4 +1,5 @@
 using CarDealership.Data;
+using CarDealership.Models;
 
 namespace CarDealership.Repositories;
 
@@ -6,7 +7,7 @@ public class UnitOfWork : IUnitOfWork
 {
     private readonly AppDbContext _context;
     private ICarRepository? _cars;
-    private IBrandRepository? _brands;
+    private IRepository<Brand>? _brands;
     private IFeatureRepository? _features;
     private IWishlistRepository? _wishlists;
     private ITestDriveRepository? _testDrives;
@@ -18,7 +19,7 @@ public class UnitOfWork : IUnitOfWork
     }
 
     public ICarRepository Cars => _cars ??= new CarRepository(_context);
-    public IBrandRepository Brands => _brands ??= new BrandRepository(_context);
+    public IRepository<Brand> Brands => _brands ??= new BrandRepository(_context);
     public IFeatureRepository Features => _features ??= new FeatureRepository(_context);
     public IWishlistRepository Wishlists => _wishlists ??= new WishlistRepository(_context);
     public ITestDriveRepository TestDrives => _testDrives ??= new TestDriveRepository(_context);
