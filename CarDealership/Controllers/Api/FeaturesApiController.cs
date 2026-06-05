@@ -17,7 +17,6 @@ public class FeaturesApiController : ControllerBase
         _featureService = featureService;
     }
 
-    // GET: /api/features
     [HttpGet]
     [ProducesResponseType(typeof(List<FeatureDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<List<FeatureDto>>> GetAll(CancellationToken cancellationToken)
@@ -26,7 +25,6 @@ public class FeaturesApiController : ControllerBase
         return Ok(features.ToDtoList());
     }
 
-    // GET: /api/features/5
     [HttpGet("{id:int}")]
     [ProducesResponseType(typeof(FeatureDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -39,7 +37,6 @@ public class FeaturesApiController : ControllerBase
         return Ok(feature.ToDto());
     }
 
-    // POST: /api/features
     [HttpPost]
     [Authorize(Roles = "Admin")]
     [ProducesResponseType(typeof(FeatureDto), StatusCodes.Status201Created)]
@@ -57,7 +54,6 @@ public class FeaturesApiController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = feature.Id }, feature.ToDto());
     }
 
-    // PUT: /api/features/5
     [HttpPut("{id:int}")]
     [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -80,7 +76,6 @@ public class FeaturesApiController : ControllerBase
         return NoContent();
     }
 
-    // DELETE: /api/features/5
     [HttpDelete("{id:int}")]
     [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]

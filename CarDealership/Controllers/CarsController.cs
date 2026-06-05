@@ -1,5 +1,4 @@
 using System.Security.Claims;
-using CarDealership.Mappings;
 using CarDealership.Models;
 using CarDealership.Services;
 using CarDealership.ViewModels;
@@ -35,7 +34,18 @@ public class CarsController : Controller
     public async Task<IActionResult> Index(CancellationToken cancellationToken)
     {
         var cars = await _carService.GetAllCarsAsync(cancellationToken);
-        return View(cars.ToViewModelList());
+        return View(cars.Select(c => new CarViewModel
+        {
+            Id = c.Id,
+            BrandName = c.Brand?.Name ?? string.Empty,
+            ModelName = c.ModelName,
+            Year = c.Year,
+            Price = c.Price,
+            ImagePath = c.ImagePath,
+            IsSold = c.IsSold,
+            AddedAt = c.AddedAt,
+            FeatureNames = c.Features?.Select(f => f.Name).ToList() ?? new()
+        }).ToList());
     }
 
     [Authorize]
@@ -48,7 +58,18 @@ public class CarsController : Controller
         ViewBag.IsInWishlist = await _wishlistService.IsInWishlistAsync(userId, id, cancellationToken);
         ViewBag.ReturnUrl = returnUrl;
 
-        return View(car.ToViewModel());
+        return View(new CarViewModel
+        {
+            Id = car.Id,
+            BrandName = car.Brand?.Name ?? string.Empty,
+            ModelName = car.ModelName,
+            Year = car.Year,
+            Price = car.Price,
+            ImagePath = car.ImagePath,
+            IsSold = car.IsSold,
+            AddedAt = car.AddedAt,
+            FeatureNames = car.Features?.Select(f => f.Name).ToList() ?? new()
+        });
     }
 
     [Authorize(Roles = "Admin")]
@@ -163,7 +184,18 @@ public class CarsController : Controller
     {
         var car = await _carService.GetCarByIdAsync(id, cancellationToken);
         if (car == null || car.IsSold) return NotFound();
-        return View(car.ToViewModel());
+        return View(new CarViewModel
+        {
+            Id = car.Id,
+            BrandName = car.Brand?.Name ?? string.Empty,
+            ModelName = car.ModelName,
+            Year = car.Year,
+            Price = car.Price,
+            ImagePath = car.ImagePath,
+            IsSold = car.IsSold,
+            AddedAt = car.AddedAt,
+            FeatureNames = car.Features?.Select(f => f.Name).ToList() ?? new()
+        });
     }
 
     [HttpPost]
