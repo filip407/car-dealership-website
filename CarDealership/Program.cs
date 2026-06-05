@@ -8,6 +8,13 @@ using Microsoft.EntityFrameworkCore;
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
+// Seteaza simbolul € pentru ToString("C") in containerul Alpine (invariant mode)
+var euroCulture = (System.Globalization.CultureInfo)System.Globalization.CultureInfo.InvariantCulture.Clone();
+euroCulture.NumberFormat.CurrencySymbol = "€";
+euroCulture.NumberFormat.CurrencyDecimalDigits = 2;
+System.Globalization.CultureInfo.DefaultThreadCurrentCulture = euroCulture;
+System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = euroCulture;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<AppDbContext>(options =>

@@ -9,7 +9,7 @@
         <div class="card shadow-sm mb-4">
             <div class="card-body">
                 <h5 class="card-title">@Model.BrandName @Model.ModelName</h5>
-                <p class="text-muted">An: @Model.Year | Preț: @($"€{Model.Price:N2}")</p>
+                <p class="text-muted">An: @Model.Year | Preț: @Model.Price.ToString("C")</p>
             </div>
         </div>
 
