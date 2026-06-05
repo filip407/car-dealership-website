@@ -28,6 +28,7 @@ logs/
 appsettings.Development.json
 *.pfx
 *.key
+.env
 
 # OS
 .DS_Store
