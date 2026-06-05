@@ -34,7 +34,7 @@ else
                     }
                     <div class="card-body">
                         <h5 class="card-title">@item.BrandName @item.ModelName</h5>
-                        <p class="card-text text-success fw-bold fs-5">@item.Price.ToString("C")</p>
+                        <p class="card-text text-success fw-bold fs-5">€@item.Price.ToString("N2")</p>
                         <p class="card-text"><small class="text-muted">An: @item.Year</small></p>
                     </div>
                     <div class="card-footer bg-white border-top-0 d-flex justify-content-between pb-3">
@@ -44,8 +44,4 @@ else
                             <button type="submit" class="btn btn-sm btn-outline-danger">Elimină</button>
                         </form>
                     </div>
-                </div>
-            </div>
-        }
-    </div>
-}
+           
