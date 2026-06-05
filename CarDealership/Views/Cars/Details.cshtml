@@ -28,7 +28,7 @@
             <div class="card-body p-5">
                 <p class="text-muted mb-1" style="letter-spacing: 0.1em; text-transform: uppercase; font-size: 0.8rem;">@Model.BrandName</p>
                 <h2 class="card-title fw-bold mb-1">@Model.ModelName</h2>
-                <h3 class="mb-4 mt-2" style="color: #1a1a1a;">€@Model.Price.ToString("N2")</h3>
+                <h3 class="mb-4 mt-2" style="color: #1a1a1a;">@($"€{Model.Price:N2}")</h3>
 
                 <ul class="list-group list-group-flush mb-4">
                     <li class="list-group-item px-0"><strong>An fabricație:</strong> @Model.Year</li>

@@ -11,7 +11,7 @@
             </div>
             <div class="card-body">
                 <h5>@Model.BrandName @Model.ModelName</h5>
-                <p class="text-muted">An: @Model.Year | Preț listat: €@Model.Price.ToString("N2")</p>
+                <p class="text-muted">An: @Model.Year | Preț listat: @($"€{Model.Price:N2}")</p>
                 <hr />
                 <form asp-action="Sell" method="post">
                     <input type="hidden" name="id" value="@Model.Id" />
